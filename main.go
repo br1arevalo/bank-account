@@ -3,8 +3,14 @@ package main
 import "fmt"
 
 var saldo, nombre = 0.0, "luis pelonso"
-var op int
+var op, co int
 var dep, ret float64
+var p1 producto
+
+type producto struct {
+	name string
+	cost float64
+}
 
 func main() {
 	cliente()
@@ -14,6 +20,70 @@ func cliente() {
 	fmt.Println("Crea tu cuenta \nNombre completo:")
 	fmt.Scan(&nombre)
 	menu()
+}
+
+func compras() {
+	fmt.Println("Bienvenido al menu de compras\nSelecciona una opcion:\nDigita 1 para crear un nuevo producto\nDigita 2 para comprar un producto\nDigita 9 para regresar al menu anterior")
+	if p1.cost > 0 {
+		fmt.Println("Producto disponible:", p1)
+	} else {
+		fmt.Println("Actualmente no existe ningun producto para comprar")
+	}
+	fmt.Scan(&co)
+	switch {
+	case co == 1:
+		crear()
+	case co == 2:
+		if p1.cost <= 0 {
+			fmt.Println("No existe producto para comprar, cree un nuevo producto")
+			compras()
+		}
+		comprar()
+	case co == 9:
+		menu()
+	default:
+		fmt.Println("Opcion incorrecta")
+		compras()
+	}
+}
+
+func crear() producto {
+
+	var cr int
+	fmt.Println("Estas creando un nuevo producto, para continuar ingresa cualquier caracter, para salir digita 9")
+	fmt.Scan(&cr)
+	if cr == 9 {
+		compras()
+	} else {
+		fmt.Println("Nombra el nuevo producto:")
+		fmt.Scan(&p1.name)
+		fmt.Println("Ponle un precio:")
+		fmt.Scan(&p1.cost)
+		if p1.cost <= 0 {
+			fmt.Println("Solo puede tener valores mayores a cero")
+			crear()
+		}
+		compras()
+	}
+	return p1
+}
+
+func comprar() {
+	var qw int
+	fmt.Println("Recuerda que para comprar debes de tener saldo suficiente en tu cuenta\nTu saldo es:", saldo, "\nProducto disponible:", p1, "\nPresiona 1 para comprar\nPresiona 9 para regresar")
+	fmt.Scan(&qw)
+	switch {
+	case qw == 9:
+		compras()
+	case qw == 1:
+		if saldo >= p1.cost {
+			saldo = saldo - p1.cost
+			fmt.Println("Compraste un", p1.name, "de:", p1.cost, "pesos\nTe quedan:", saldo, "pesos")
+			comprar()
+		}
+		fmt.Println("No tienes saldo suficiente, ve a depositar")
+		deposito(dep)
+	}
 }
 
 func deposito(float64) {
@@ -49,7 +119,8 @@ func menu() {
 	case op == 2:
 		deposito(saldo)
 	case op == 3:
-
+	case op == 9:
+		compras()
 	default:
 		fmt.Println("Operacion incorrecta, redireccionando al menu anterior")
 		menu()
@@ -90,5 +161,4 @@ func volver() {
 	fmt.Println("\nPresiona cualquier tecla para volver al menu")
 	fmt.Scan(&vo)
 	menu()
-
 }
